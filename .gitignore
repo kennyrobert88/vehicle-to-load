@@ -1,0 +1,7 @@
+# LTspice / simulation generated artifacts (regenerate via: LTspice -b v2l.cir)
+*.raw
+*.log
+*.net
+*.op.raw
+*.claude
+ltspice_run.out

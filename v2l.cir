@@ -1,0 +1,73 @@
+* ============================================================================
+* Vehicle-to-Load (V2L) System Simulation  --  generated from CLAUDE.md
+* Charging: 230V AC grid -> full-wave bridge rectifier -> filter cap
+* Discharging: 400V EV pack -> H-bridge PWM inverter -> LC filter -> AC load
+* ============================================================================
+
+* ---------------------------------------------------------------------------
+* MODULE A : The Grid & Rectifier (AC -> DC)
+*   Vgrid = SINE(0 325 50)  -> 325 V peak = 230 Vrms at 50 Hz
+*   Full-wave diode bridge (D1..D4) + 1000u smoothing cap
+* ---------------------------------------------------------------------------
+Vgrid    gridA gridB SINE(0 325 50)
+D1       gridA rect_p D1N4007        ; AC-A -> DC+
+D2       gridB rect_p D1N4007        ; AC-B -> DC+
+D3       0     gridA  D1N4007        ; DC- (gnd) -> AC-A
+D4       0     gridB  D1N4007        ; DC- (gnd) -> AC-B
+Cgrid_filter rect_p 0 1000u
+Rbleed   rect_p 0 500               ; bleeder load so the cap output is meaningful
+
+* ---------------------------------------------------------------------------
+* MODULE B : The EV Battery Simulator
+*   Ideal 400 V DC traction pack with 0.5 ohm internal resistance.
+*   "dcbus" is the DC rail that feeds the inverter H-bridge.
+* ---------------------------------------------------------------------------
+Vbattery batt  0     400
+Rinternal batt dcbus 0.5
+
+* ---------------------------------------------------------------------------
+* MODULE D : PWM Control Signal Block (defined before the bridge that uses it)
+*   Vref     = 50 Hz reference sine
+*   Vcarrier = 20 kHz triangular carrier (+/-1.2)
+*   Behavioral comparators make complementary gate signals gp / gn:
+*       ref > carrier  ->  gp = 1 (drives S1 & S4)  ,  gn = 0
+*       ref < carrier  ->  gn = 1 (drives S2 & S3)  ,  gp = 0
+* ---------------------------------------------------------------------------
+Vref      ref     0 SINE(0 1 50)
+Vcarrier  carrier 0 PULSE(-1.2 1.2 0 25u 25u 1u 50u)
+Bgp gp 0 V = if( V(ref) > V(carrier), 1, 0 )
+Bgn gn 0 V = if( V(ref) > V(carrier), 0, 1 )
+
+* ---------------------------------------------------------------------------
+* MODULE C : The V2L H-Bridge Inverter (DC -> AC) using ideal switches
+*   Left  leg : S1 (high, dcbus->outA) / S2 (low, outA->0)
+*   Right leg : S3 (high, dcbus->outB) / S4 (low, outB->0)
+*   Diagonal pairs (S1,S4) on gp  and  (S2,S3) on gn  -> bipolar PWM.
+*   Each leg's two switches use complementary gates -> no shoot-through.
+* ---------------------------------------------------------------------------
+S1 dcbus outA gp 0 MySwitch
+S4 outB  0    gp 0 MySwitch
+S2 outA  0    gn 0 MySwitch
+S3 dcbus outB gn 0 MySwitch
+
+* ---- LC low-pass filter (turns the PWM blocks into a sine) ----------------
+*   fc = 1/(2*pi*sqrt(L*C)) ~ 734 Hz : well above 50 Hz, far below 20 kHz
+L_filter outA nfilt 10m
+C_filter nfilt outB 4.7u
+* ---- The V2L output load -------------------------------------------------
+Rload    nfilt outB 50               ; ~1.8 kW resistive appliance load
+
+* ---------------------------------------------------------------------------
+* Device models
+* ---------------------------------------------------------------------------
+.model D1N4007 D(Is=7.02767n Rs=0.0341512 N=1.80803 Cjo=2.6e-11 M=0.333
++ Vj=0.7 Bv=1000 Ibv=5e-08 Tt=1e-07)
+.model MySwitch SW(Ron=0.01 Roff=1Meg Vt=0.5)
+
+* ---------------------------------------------------------------------------
+* Analysis : 100 ms transient = 5 cycles of 50 Hz
+* ---------------------------------------------------------------------------
+.tran 0 100m 0 10u
+.option plotwinsize=0
+
+.end
