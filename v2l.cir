@@ -27,13 +27,24 @@ Rinternal batt dcbus 0.5
 
 * ---------------------------------------------------------------------------
 * MODULE D : PWM Control Signal Block (defined before the bridge that uses it)
-*   Vref     = 50 Hz reference sine
+*   Vref     = reference sine  (amplitude & frequency set the AC output)
 *   Vcarrier = 20 kHz triangular carrier (+/-1.2)
 *   Behavioral comparators make complementary gate signals gp / gn:
 *       ref > carrier  ->  gp = 1 (drives S1 & S4)  ,  gn = 0
 *       ref < carrier  ->  gn = 1 (drives S2 & S3)  ,  gp = 0
+*
+*   DUAL-VOLTAGE OUTPUT SELECTOR
+*   Output is linear in the modulation index M = Vref_amp / Vcarrier_amp,
+*   so amplitude alone sets the RMS volts (calibrated: amp 1.0 -> 229 Vrms).
+*       MODE = 1 : 230 V / 50 Hz  (Europe / IEC)      -> Vref amp 1.000
+*       MODE = 2 : 120 V / 60 Hz  (North America)     -> Vref amp 0.524
+*   .step runs BOTH modes in a single simulation pass.
 * ---------------------------------------------------------------------------
-Vref      ref     0 SINE(0 1 50)
+.param MODE  = 1
+.step param MODE list 1 2
+.param VREFA = if(MODE==1, 1.000, 0.524)   ; reference amplitude  -> sets Vrms
+.param FREF  = if(MODE==1, 50, 60)         ; reference frequency  -> sets output Hz
+Vref      ref     0 SINE(0 {VREFA} {FREF})
 Vcarrier  carrier 0 PULSE(-1.2 1.2 0 25u 25u 1u 50u)
 Bgp gp 0 V = if( V(ref) > V(carrier), 1, 0 )
 Bgn gn 0 V = if( V(ref) > V(carrier), 0, 1 )

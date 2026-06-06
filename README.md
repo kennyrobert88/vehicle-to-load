@@ -19,8 +19,9 @@ project models the two operating phases end-to-end:
 1. **Grid charging (AC → DC).** A 230 V<sub>RMS</sub> / 50 Hz grid feeds a full-wave diode
    bridge and smoothing capacitor, conditioning AC into a stable DC rail.
 2. **V2L discharge (DC → AC).** A 400 V battery drives an H-bridge inverter switched by
-   20 kHz sinusoidal PWM; an LC low-pass filter reconstructs a clean 230 V AC sine across the
-   load.
+   20 kHz sinusoidal PWM; an LC low-pass filter reconstructs a clean AC sine across the load.
+   The output is **dual-voltage selectable** — **230 V / 50 Hz** (Europe) or
+   **120 V / 60 Hz** (North America) — chosen by a single mode parameter.
 
 ---
 
@@ -63,7 +64,8 @@ output is for demonstrating AC→DC conditioning, while the ideal 400 V pack fee
 | --- | --- |
 | [`v2l.cir`](v2l.cir) | The complete, runnable SPICE netlist (all four modules + analysis directives). |
 | [`plot_v2l.py`](plot_v2l.py) | Post-processor: parses the LTspice `.raw`, runs quantitative checks, renders the results figure. |
-| [`v2l_results.png`](v2l_results.png) | Rendered waveforms for the three demonstration phases. |
+| [`v2l_results.png`](v2l_results.png) | Rendered waveforms for the three demonstration phases (230 V mode). |
+| [`v2l_dual_voltage.png`](v2l_dual_voltage.png) | Comparison of the two selectable output standards (230 V/50 Hz vs 120 V/60 Hz). |
 | [`CLAUDE.md`](CLAUDE.md) | Original step-by-step design specification (LTspice build guide). |
 | `.gitignore` | Excludes regenerable simulation artifacts (`*.raw`, `*.log`, `*.net`). |
 
@@ -96,7 +98,8 @@ pip install numpy matplotlib PyLTSpice
 ```
 
 This produces `v2l.raw`, containing all node voltages and branch currents for the 100 ms
-transient (5 cycles of 50 Hz).
+transient. The netlist is **stepped over both output modes** (`MODE = 1` and `MODE = 2`), so a
+single run captures the 230 V / 50 Hz *and* 120 V / 60 Hz cases.
 
 **2. Analyze and plot the results:**
 
@@ -136,6 +139,26 @@ The figure shows the three demonstration phases:
 
 ---
 
+## Dual-Voltage Output
+
+Because the AC output is synthesized by the inverter (independent of the grid that charged the
+battery), the output standard is set entirely by the **PWM modulation index** and **reference
+frequency** — not by any hardware change. The output amplitude is linear in the modulation
+index `M = V_ref / V_carrier`, so a single mode parameter selects the mains standard. The
+netlist `.step`s over both in one simulation:
+
+| Mode | Region | `MODE` | Measured RMS | Frequency | Load power (50 Ω) |
+| :---: | --- | :---: | :---: | :---: | :---: |
+| 1 | Europe / IEC | `1` | 229.1 V | 50.0 Hz | ~1.05 kW |
+| 2 | North America | `2` | 121.7 V | 60.0 Hz | ~0.30 kW |
+
+![Dual-voltage output comparison](v2l_dual_voltage.png)
+
+To pin the model to a single standard instead of sweeping both, delete the `.step` line in
+[`v2l.cir`](v2l.cir) and set `.param MODE = 1` (or `2`) directly.
+
+---
+
 ## Circuit Design Notes
 
 **LC filter cutoff.** With `L = 10 mH` and `C = 4.7 µF`, the corner frequency is
@@ -147,7 +170,9 @@ filter passes the sine while rejecting the carrier.
 
 **Modulation index.** The reference amplitude (1.0) over the carrier amplitude (1.2) gives
 `M ≈ 0.83`, so the fundamental output is `M × 400 V ≈ 333 V` peak ≈ **235 V<sub>RMS</sub>** —
-by design, close to nominal mains.
+by design, close to nominal mains. Halving the modulation index (`M ≈ 0.43`, reference
+amplitude 0.524) scales the output to **120 V<sub>RMS</sub>** for the North-America mode — see
+[Dual-Voltage Output](#dual-voltage-output).
 
 **Switch model.** The H-bridge uses ideal voltage-controlled switches
 (`Ron = 0.01 Ω`, `Roff = 1 MΩ`, `Vt = 0.5`) for robust convergence, as recommended in the
