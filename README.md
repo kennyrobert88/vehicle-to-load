@@ -66,7 +66,6 @@ output is for demonstrating AC→DC conditioning, while the ideal 400 V pack fee
 | [`plot_v2l.py`](plot_v2l.py) | Post-processor: parses the LTspice `.raw`, runs quantitative checks, renders the results figure. |
 | [`v2l_results.png`](v2l_results.png) | Rendered waveforms for the three demonstration phases (230 V mode). |
 | [`v2l_dual_voltage.png`](v2l_dual_voltage.png) | Comparison of the two selectable output standards (230 V/50 Hz vs 120 V/60 Hz). |
-| [`CLAUDE.md`](CLAUDE.md) | Original step-by-step design specification (LTspice build guide). |
 | `.gitignore` | Excludes regenerable simulation artifacts (`*.raw`, `*.log`, `*.net`). |
 
 ---
