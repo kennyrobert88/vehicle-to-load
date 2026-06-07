@@ -62,7 +62,9 @@ output is for demonstrating AC→DC conditioning, while the ideal 400 V pack fee
 
 | File | Description |
 | --- | --- |
-| [`v2l.cir`](v2l.cir) | The complete, runnable SPICE netlist (all four modules + analysis directives). |
+| [`v2l.asc`](v2l.asc) | LTspice schematic (GUI format) — open in LTspice to see and run the full visual circuit. |
+| [`v2l.cir`](v2l.cir) | SPICE netlist — used for batch/headless simulation and post-processing. |
+| [`gen_asc.py`](gen_asc.py) | Generator script that builds `v2l.asc` from scratch (run `python3 gen_asc.py > v2l.asc`). |
 | [`plot_v2l.py`](plot_v2l.py) | Post-processor: parses the LTspice `.raw`, runs quantitative checks, renders the results figure. |
 | [`v2l_results.png`](v2l_results.png) | Rendered waveforms for the three demonstration phases (230 V mode). |
 | [`v2l_dual_voltage.png`](v2l_dual_voltage.png) | Comparison of the two selectable output standards (230 V/50 Hz vs 120 V/60 Hz). |
@@ -86,7 +88,17 @@ pip install numpy matplotlib PyLTSpice
 
 ## Usage
 
-**1. Run the circuit simulation** (batch mode, no GUI required):
+**0. Open the visual schematic in LTspice** (recommended starting point):
+
+```bash
+open -a LTspice v2l.asc          # macOS — opens the full drawn schematic
+```
+
+Inside LTspice, press the **Run** button (▶) to simulate, then click any wire or component to probe waveforms interactively.
+
+> **Note:** `v2l.asc` is a GUI schematic file. On macOS, LTspice batch mode only supports `.cir` netlists — use the GUI for `.asc`.
+
+**1. Run the simulation in batch mode** (no GUI required, uses the netlist):
 
 ```bash
 # macOS
