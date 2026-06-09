@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kenny Robert — Portfolio</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d1117;
+      --surface:   #161b22;
+      --border:    #30363d;
+      --accent:    #58a6ff;
+      --accent2:   #3fb950;
+      --text:      #e6edf3;
+      --muted:     #8b949e;
+      --tag-bg:    #1f2937;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13,17,23,.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+
+    .nav-logo {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: .02em;
+    }
+
+    .nav-links { display: flex; gap: 1.6rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .9rem;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── Hero ── */
+    .hero {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 6rem 2rem 4rem;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(88,166,255,.12);
+      color: var(--accent);
+      border: 1px solid rgba(88,166,255,.3);
+      border-radius: 2rem;
+      padding: .3rem .9rem;
+      font-size: .78rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 1.4rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      font-weight: 800;
+      letter-spacing: -.03em;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+
+    .hero h1 span { color: var(--accent); }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1.1rem;
+      max-width: 540px;
+      margin: 0 auto 2rem;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: var(--accent);
+      color: #0d1117;
+      font-weight: 700;
+      font-size: .9rem;
+      text-decoration: none;
+      padding: .65rem 1.4rem;
+      border-radius: .5rem;
+      transition: opacity .2s, transform .2s;
+    }
+    .hero-cta:hover { opacity: .88; transform: translateY(-2px); }
+
+    /* ── Section ── */
+    section {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    .section-label {
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: .5rem;
+    }
+
+    .section-title {
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -.02em;
+      margin-bottom: .5rem;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+      font-size: .95rem;
+    }
+
+    /* ── Project Cards ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: .75rem;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition: border-color .25s, transform .25s, box-shadow .25s;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(88,166,255,.04), transparent 60%);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+
+    .card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+    }
+    .card:hover::before { opacity: 1; }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .5rem;
+    }
+
+    .card-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: .5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .card-icon.blue  { background: rgba(88,166,255,.15); }
+    .card-icon.green { background: rgba(63,185,80,.15); }
+    .card-icon.purple{ background: rgba(188,140,255,.15); }
+
+    .card-link-icon {
+      color: var(--muted);
+      transition: color .2s;
+      flex-shrink: 0;
+    }
+    .card:hover .card-link-icon { color: var(--accent); }
+
+    .card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: .875rem;
+      line-height: 1.65;
+      flex: 1;
+    }
+
+    .card-footer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem;
+      margin-top: auto;
+    }
+
+    .tag {
+      background: var(--tag-bg);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: .3rem;
+      padding: .18rem .55rem;
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      margin-right: .35rem;
+      vertical-align: middle;
+      position: relative;
+      top: -1px;
+    }
+    .dot.python  { background: #3572a5; }
+    .dot.ts      { background: #3178c6; }
+    .dot.spice   { background: #e34c26; }
+    .dot.go      { background: #00add8; }
+
+    /* ── About ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    @media (max-width: 640px) {
+      .about-grid { grid-template-columns: 1fr; }
+    }
+
+    .about-text p {
+      color: var(--muted);
+      font-size: .95rem;
+      margin-bottom: .85rem;
+    }
+
+    .skills-list {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: .75rem;
+      padding: 1.25rem 1.5rem;
+    }
+
+    .skills-list h4 {
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: .85rem;
+    }
+
+    .skill-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .45rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: .875rem;
+    }
+    .skill-item:last-child { border-bottom: none; }
+
+    .skill-bar-wrap {
+      width: 100px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .skill-bar { height: 100%; border-radius: 2px; background: var(--accent); }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav>
+  <a class="nav-logo" href="#">Kenny Robert</a>
+  <ul class="nav-links">
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="https://github.com/kennyrobert88" target="_blank" rel="noopener">GitHub</a></li>
+  </ul>
+</nav>
+
+<!-- ── Hero ── -->
+<div class="hero">
+  <div class="hero-badge">Power Electronics &amp; Software</div>
+  <h1>Hi, I'm <span>Kenny Robert</span></h1>
+  <p>
+    Engineer at the intersection of power electronics simulation and
+    full-stack software — building SPICE models, Go services, and
+    TypeScript backends.
+  </p>
+  <a class="hero-cta" href="https://github.com/kennyrobert88" target="_blank" rel="noopener">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+               0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+               -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87
+               2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59
+               .82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27
+               2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08
+               2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73
+               .54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016
+               8c0-4.42-3.58-8-8-8z"/>
+    </svg>
+    View GitHub Profile
+  </a>
+</div>
+
+<!-- ── Projects ── -->
+<section id="projects">
+  <p class="section-label">Work</p>
+  <h2 class="section-title">Recent Projects</h2>
+  <p class="section-sub">A selection of my most recent builds — from SPICE circuit simulation to cloud-ready APIs.</p>
+
+  <div class="projects-grid">
+
+    <!-- Project 1: vehicle-to-load -->
+    <a class="card" href="https://github.com/kennyrobert88/vehicle-to-load" target="_blank" rel="noopener">
+      <div class="card-header">
+        <div class="card-icon blue">⚡</div>
+        <svg class="card-link-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path fill-rule="evenodd" d="M8.22 2.97a.75.75 0 011.06 0l4.25 4.25a.75.75
+                0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06l2.97-2.97H3.75a.75.75 0
+                010-1.5h7.44L8.22 4.03a.75.75 0 010-1.06z"/>
+        </svg>
+      </div>
+      <h3>Vehicle-to-Load (V2L) System Simulation</h3>
+      <p>
+        A full SPICE model of a bidirectional EV power system — AC grid charging
+        via a diode-bridge rectifier and DC-to-AC inversion through an H-bridge
+        PWM inverter. Outputs grid-quality 230 V / 50 Hz or 120 V / 60 Hz at the
+        flick of a mode parameter, verified with a Python post-processing pipeline
+        and rendered waveform plots.
+      </p>
+      <div class="card-footer">
+        <span class="tag"><span class="dot spice"></span>LTspice</span>
+        <span class="tag"><span class="dot python"></span>Python</span>
+        <span class="tag">Power Electronics</span>
+        <span class="tag">PWM</span>
+      </div>
+    </a>
+
+    <!-- Project 2: power-converter -->
+    <a class="card" href="https://github.com/kennyrobert88/power-converter" target="_blank" rel="noopener">
+      <div class="card-header">
+        <div class="card-icon green">🔋</div>
+        <svg class="card-link-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path fill-rule="evenodd" d="M8.22 2.97a.75.75 0 011.06 0l4.25 4.25a.75.75
+                0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06l2.97-2.97H3.75a.75.75 0
+                010-1.5h7.44L8.22 4.03a.75.75 0 010-1.06z"/>
+        </svg>
+      </div>
+      <h3>DC-DC Power Converter Simulations</h3>
+      <p>
+        LTspice simulation library covering five switching converter topologies —
+        Buck, Boost, Ćuk, and their synchronous variants — modelled with real
+        component datasheets (IRFZ44N MOSFETs, Schottky diodes). Each topology
+        accounts for conduction, switching, and gate-drive losses, making this a
+        practical reference for power-supply design and topology comparison.
+      </p>
+      <div class="card-footer">
+        <span class="tag"><span class="dot spice"></span>LTspice</span>
+        <span class="tag">Buck / Boost</span>
+        <span class="tag">Ćuk</span>
+        <span class="tag">SPICE Models</span>
+      </div>
+    </a>
+
+    <!-- Project 3: analy (full-stack) -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon purple">📊</div>
+        <div style="display:flex;gap:.6rem;">
+          <a href="https://github.com/kennyrobert88/analy" target="_blank" rel="noopener"
+             style="color:var(--muted);font-size:.75rem;font-weight:600;text-decoration:none;border:1px solid var(--border);border-radius:.3rem;padding:.15rem .5rem;transition:color .2s,border-color .2s;"
+             onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'"
+             onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border)'">
+            frontend ↗
+          </a>
+          <a href="https://github.com/kennyrobert88/backend-analy" target="_blank" rel="noopener"
+             style="color:var(--muted);font-size:.75rem;font-weight:600;text-decoration:none;border:1px solid var(--border);border-radius:.3rem;padding:.15rem .5rem;transition:color .2s,border-color .2s;"
+             onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'"
+             onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border)'">
+            backend ↗
+          </a>
+        </div>
+      </div>
+      <h3>Analy — Email &amp; Calendar Analytics</h3>
+      <p>
+        Full-stack email analytics product split across two repos. The
+        <strong style="color:var(--text)">Electron desktop app</strong> provides
+        a Chart.js dashboard with Google OAuth2, local SQLite storage, and
+        on-device AI analysis of your inbox. The
+        <strong style="color:var(--text)">Fastify/TypeScript backend</strong>
+        handles Gmail sync, Calendar API integration, and exposes REST endpoints
+        for sender trends, daily volume, and hourly usage patterns — deployed via
+        Docker with GitHub Actions CI.
+      </p>
+      <div class="card-footer">
+        <span class="tag">Electron</span>
+        <span class="tag"><span class="dot ts"></span>TypeScript</span>
+        <span class="tag">Fastify</span>
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">SQLite</span>
+        <span class="tag">Docker</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── About ── -->
+<section id="about">
+  <p class="section-label">About</p>
+  <h2 class="section-title">A bit about me</h2>
+  <p class="section-sub">Engineer, builder, tinkerer.</p>
+
+  <div class="about-grid">
+    <div class="about-text">
+      <p>
+        I work across power electronics and software — modelling circuits in SPICE
+        while also writing backends, stream processors, and APIs. I'm drawn to
+        projects where precise engineering meets real-world impact.
+      </p>
+      <p>
+        On the hardware side I design and simulate switching converters and
+        inverter systems. On the software side I build services in TypeScript,
+        Go, and Python that handle everything from Gmail analytics to
+        stream-processing connectors.
+      </p>
+      <p>
+        If something can be simulated, visualized, or automated — I'm probably
+        already building it.
+      </p>
+    </div>
+
+    <div class="skills-list">
+      <h4>Skills &amp; Tools</h4>
+      <div class="skill-item">
+        <span>LTspice / SPICE</span>
+        <div class="skill-bar-wrap"><div class="skill-bar" style="width:92%"></div></div>
+      </div>
+      <div class="skill-item">
+        <span>Python</span>
+        <div class="skill-bar-wrap"><div class="skill-bar" style="width:85%"></div></div>
+      </div>
+      <div class="skill-item">
+        <span>TypeScript / Node.js</span>
+        <div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div>
+      </div>
+      <div class="skill-item">
+        <span>Go</span>
+        <div class="skill-bar-wrap"><div class="skill-bar" style="width:70%"></div></div>
+      </div>
+      <div class="skill-item">
+        <span>Docker / CI-CD</span>
+        <div class="skill-bar-wrap"><div class="skill-bar" style="width:75%"></div></div>
+      </div>
+      <div class="skill-item">
+        <span>Power Electronics</span>
+        <div class="skill-bar-wrap"><div class="skill-bar" style="width:90%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <p>Built by <a href="https://github.com/kennyrobert88" target="_blank" rel="noopener">Kenny Robert</a> · <a href="https://github.com/kennyrobert88?tab=repositories" target="_blank" rel="noopener">All repositories</a></p>
+</footer>
+
+</body>
+</html>
